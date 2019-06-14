@@ -24,6 +24,11 @@ class Logger {
     this.messageLabel = options.messageLabel
     // indent: a number to use as indent level. See JSON.stringify(o, null, indent)
     this.indent = options.indent
+    // replaceMessageLabelWithLevel: only matters if you pass JSON.
+    // gives you consistency between just passing a bare string and
+    // passing object. you can have both use log level as message
+    // label.
+    this.replaceMessageLabelWithLevel = options.replaceMessageLabelWithLevel
   }
   shouldLog(level) {
     return levels[level] >= this.level
@@ -42,6 +47,14 @@ class Logger {
         level,
         time: moment().toISOString()
       }, o)
+    }
+    if (this.messageLabel && this.replaceMessageLabelWithLevel && o[messageLabel]) {
+      o = Object.assign({
+        level: o.level,
+        time: o.time,
+        [level]: o[messageLabel]
+      }, o)
+      delete o[messageLabel]
     }
     if (this.skipLevel) {
       delete o.level
@@ -80,11 +93,19 @@ class Logger {
 exports = module.exports = Logger
 if (require.main === module) {
   const log = new Logger({
-    level: 'info'
+    level: 'info',
+    messageLabel: 'message',
+    replaceMessageLabelWithLevel: true,
+    skipLevel: true
   })
   log.trace('hello trace')
   log.debug('hello debug')
   log.info('hello info')
-  log.warn('hello warn')
+  log.warn({
+    message: 'Yo! Warning!!!',
+    obj: {
+      some: 'object here'
+    }
+  })
   log.error('hello error')
 }
