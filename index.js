@@ -14,6 +14,7 @@ const levels = {
 }
 class Logger {
   constructor(options) {
+    options = options || {}
     this.level = levels[options.level || 'off']
     this.skipLevel = options.skipLevel
     this.skipTime = options.skipTime
