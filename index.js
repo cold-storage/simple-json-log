@@ -16,14 +16,20 @@ class Logger {
   constructor(options) {
     options = options || {}
     this.level = levels[options.level || 'off']
+    // skipLevel: don't display the log level in output
     this.skipLevel = options.skipLevel
+    // skipTime: don't display the log time in output
     this.skipTime = options.skipTime
+    // messageLabel: use messageLabel as default label (instead of log level)
     this.messageLabel = options.messageLabel
+    // indent: a number to use as indent level. See JSON.stringify(o, null, indent)
+    this.indent = options.indent
   }
   shouldLog(level) {
     return levels[level] >= this.level
   }
   log(o, level) {
+    level = level || 'debug'
     const messageLabel = this.messageLabel || level
     if (!isObject(o)) {
       o = {
@@ -43,7 +49,7 @@ class Logger {
     if (this.skipTime) {
       delete o.time
     }
-    console.log(JSON.stringify(o))
+    console.log(JSON.stringify(o, null, this.indent))
   }
   trace(o) {
     if (this.shouldLog('trace')) {
