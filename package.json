@@ -1,5 +1,5 @@
 {
-  "name": "jsonlog",
+  "name": "simple-json-log",
   "version": "0.0.0",
   "description": "Super simple JSON logger for Node.js",
   "main": "index.js",
