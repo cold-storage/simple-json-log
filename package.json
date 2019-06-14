@@ -1,0 +1,10 @@
+{
+  "name": "jsonlog",
+  "version": "0.0.0",
+  "description": "Super simple JSON logger for Node.js",
+  "main": "index.js",
+  "author": "John Stein",
+  "dependencies": {
+    "moment": "^2.24.0"
+  }
+}
