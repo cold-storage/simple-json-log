@@ -1,4 +1,4 @@
-# jsonlog
+# simple-json-log
 
 Super simple JSON logger for Node.js
 

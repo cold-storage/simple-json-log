@@ -1,10 +1,15 @@
 {
   "name": "simple-json-log",
-  "version": "0.0.2",
+  "version": "0.0.5",
+  "keywords": "log logger logging node Node.js JSON simple easy",
   "description": "Super simple JSON logger for Node.js",
   "main": "index.js",
   "author": "John Stein",
   "dependencies": {
     "moment": "^2.24.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johndstein/simple-json-log.git"
   }
 }

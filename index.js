@@ -96,7 +96,9 @@ if (require.main === module) {
     level: 'info',
     messageLabel: 'message',
     replaceMessageLabelWithLevel: true,
-    skipLevel: true
+    skipLevel: true,
+    skipTime: true,
+    indent: 2,
   })
   log.trace('hello trace')
   log.debug('hello debug')
