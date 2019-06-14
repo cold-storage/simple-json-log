@@ -72,3 +72,13 @@ class Logger {
   }
 }
 exports = module.exports = Logger
+if (require.main === module) {
+  const log = new Logger({
+    level: 'info'
+  })
+  log.trace('hello trace')
+  log.debug('hello debug')
+  log.info('hello info')
+  log.warn('hello warn')
+  log.error('hello error')
+}
