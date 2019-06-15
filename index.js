@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 'use strict'
-const isObject = (a) =>
-  !!a && a.constructor === Object
+const isString = (o) =>
+  typeof o === 'string' || o instanceof String
 class Logger {
   constructor(options) {
     options = options || {}
@@ -11,9 +11,6 @@ class Logger {
     this.label = 'message'
     this.levelAsLabel = true
     this.levelElement = false
-    this.time = () => {
-      return new Date().toISOString()
-    }
     this.indent = 0
     this.levels = {
       trace: 0,
@@ -24,13 +21,34 @@ class Logger {
       fatal: 5,
       off: 6
     }
+    this.timeFn = () => {
+      return new Date().toISOString()
+    }
+    this.fixerFn = (o, propsToSkip) => {
+      const fixed = {}
+      Object.getOwnPropertyNames(o).forEach(function(key) {
+        if (!propsToSkip || propsToSkip.indexOf(key) === -1) {
+          fixed[key] = o[key]
+        }
+      });
+      return fixed
+    }
+    this.replacerFn = (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (this.cache.indexOf(value) !== -1) {
+          return
+        }
+        this.cache.push(value)
+      }
+      return value
+    }
     Object.assign(this, options)
     for (let level of Object.keys(this.levels)) {
-      this[level] = (message, json) => {
+      this[level] = (message, json, propsToSkip) => {
         if (this.levels[level] >= this.levels[this.level]) {
           let options = {}
-          if (this.time) {
-            options.time = this.time()
+          if (this.timeFn) {
+            options.time = this.timeFn()
           }
           if (this.levelElement) {
             options.level = level
@@ -38,13 +56,15 @@ class Logger {
           const lbl = this.levelAsLabel ? level : this.label
           if (json) {
             options[lbl] = message
-            options = Object.assign(options, json)
-          } else if (isObject(message)) {
-            options = Object.assign(options, message)
+            options = Object.assign(options, this.fixerFn ? this.fixerFn(json, propsToSkip) : json)
+          } else if (!isString(message)) {
+            options = Object.assign(options, this.fixerFn ? this.fixerFn(message, propsToSkip) : message)
           } else {
             options[lbl] = message
           }
-          this.out.write(`${JSON.stringify(options, null, this.indent)}\n`)
+          this.cache = []
+          this.out.write(`${JSON.stringify(options, this.replacerFn, this.indent)}\n`)
+          this.cache = null
         }
       }
     }
@@ -56,17 +76,20 @@ if (require.main === module) {
   const log = new Logger({
     // out: fs.createWriteStream('./logfile'),
     level: 'trace',
-    // label: 'niceMessage',
-    // levelAsLabel: false,
-    // levelElement: true,
+    label: 'msg',
+    levelAsLabel: false,
+    levelElement: true,
     // time: false,
-    // indent: 2,
+    indent: 3,
     // levels: {
     //   bat: 0,
     //   zoo: 1,
     //   monkey: 2
-    // }
+    // },
+    // fixer: false,
+    // replacer: false,
   })
+  log.info('This is our log.', log, ['out'])
   log.trace('You probably won\'t ever use this.')
   log.debug('This is quite a bit of detail.')
   log.info('Hello log world!')
@@ -76,10 +99,8 @@ if (require.main === module) {
   log.info({
     some: 'nice JSON here'
   })
-  log.warn('Geting low on memory.')
-  log.error('Could not get the eggs.', {
-    message: 'oops',
-    code: 39
-  })
+  // log.warn('Geting low on memory.', log, ['out'])
+  log.error('Could not get the eggs.', new Error('The truck is out of gas.'), ['stack'])
+  log.error(new Error('hard times!'))
   log.fatal('We crashed!')
 }

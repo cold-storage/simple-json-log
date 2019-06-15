@@ -41,6 +41,10 @@ Output
 {"time":"2019-06-15T09:02:20.144Z","some":"nice JSON here"}
 ```
 
+NOTE: If you pass both a string message and a JSON object you can also
+pass as a third parameter an array of `propsToSkip`. This will remove
+any properties in the `propsToSkip` array from the JSON output.
+
 ## Options
 
 **`out`**
@@ -64,12 +68,6 @@ Otherwise we use `label` as the message label.
 
 Defaults to `false`. If `true` we add a 'level' element to the JSON output.
 
-**`time`**
-
-Defaults to a function that outputs `new Date().toISOString()`.
-If `false`, we don't add a 'time' element to the JSON output.
-You can also use your own function to format time however you like.
-
 **`indent`**
 
 Defaults to `0`. This is the number of spaces to indent the JSON output.
@@ -89,3 +87,21 @@ Defaults to the following levels. You can specify any levels you like.
   off: 6
 }
 ```
+
+**`timeFn`**
+
+Defaults to a function that outputs `new Date().toISOString()`.
+If `false`, we don't add a 'time' element to the JSON output.
+Use your own function to format time however you like.
+
+**`fixerFn`**
+
+  Defaults to a function that gets own property names from your json.
+  This makes it easy to log objects (like `Error`) that aren't
+  strictly JSON simple. If `false` we don't mess with your JSON.
+
+**`replacerFn`**
+
+  Defaults to a function that avoids `TypeError: Converting circular
+  structure to JSON`. If `false`, you may get that error in certain
+  cases.
