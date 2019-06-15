@@ -96,7 +96,7 @@ Use your own function to format time however you like.
 
 **`fixerFn`**
 
-Defaults to a function that gets own property names from your json.
+Defaults to a function that gets own property names from your JSON.
 This makes it easy to log objects (like `Error`) that aren't
 strictly simple JSON. If `false` we don't mess with your JSON.
 
