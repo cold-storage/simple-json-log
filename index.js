@@ -73,22 +73,30 @@ class Logger {
 exports = module.exports = Logger
 if (require.main === module) {
   const fs = require('fs')
-  const log = new Logger({
-    // out: fs.createWriteStream('./logfile'),
-    level: 'trace',
-    label: 'msg',
-    levelAsLabel: false,
-    levelElement: true,
-    timeFn: false,
-    indent: 3,
-    // levels: {
-    //   bat: 0,
-    //   zoo: 1,
-    //   monkey: 2
-    // },
-    // fixerFn: false,
-    replacerFn: false,
-  })
+
+  // const log = new Logger({
+  //   // out: fs.createWriteStream('./logfile'),
+  //   level: 'trace',
+  //   label: 'msg',
+  //   levelAsLabel: false,
+  //   levelElement: true,
+  //   timeFn: false,
+  //   indent: 3,
+  //   // levels: {
+  //   //   bat: 0,
+  //   //   zoo: 1,
+  //   //   monkey: 2
+  //   // },
+  //   // fixerFn: false,
+  //   replacerFn: false,
+  // })
+
+  const findUp = require('find-up')
+  const path = require('path')
+  const optPath = findUp.sync('.sjl.js')
+  const opts = require(path.relative(__dirname, optPath))
+  const log = new Logger(opts)
+
   log.info('This is our log.', log, ['out'])
   log.trace('You probably won\'t ever use this.')
   log.debug('This is quite a bit of detail.')

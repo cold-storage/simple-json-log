@@ -5,10 +5,22 @@ A simple JSON\*\* logger for Node.js.
 Light weight. No external dependencies. Great for application code or
 libraries.
 
-To use with a library, set the `level` based on an environment variable.
+To use with a library, set the `level` based on an environment
+variable.
 
 ```js
 const level = process.env.AWESOME_LIBRARY_LOG_LEVEL || 'off'
+```
+
+Or you could use some kind of logic to load all the options from a
+file.
+
+```js
+const findUp = require('find-up')
+const path = require('path')
+const optsPath = findUp.sync('.awesome.library.log.options.js')
+const opts = require(path.relative(__dirname, optsPath))
+const log = new Logger(opts)
 ```
 
 ## Quick Start
@@ -24,8 +36,8 @@ Output
 {"time":"2019-06-15T08:57:41.016Z","info":"Hello log world!"}
 ```
 
-We make it easy to log a string message and/or a JSON object.
-The string message always comes first.
+We make it easy to log a string message and/or a JSON object. The
+string message always comes first.
 
 ```js
 log.info('Hello log world!')
@@ -66,11 +78,13 @@ Otherwise we use `label` as the message label.
 
 **`levelElement`**
 
-Defaults to `false`. If `true` we add a 'level' element to the JSON output.
+Defaults to `false`. If `true` we add a 'level' element to the JSON
+output.
 
 **`indent`**
 
-Defaults to `0`. This is the number of spaces to indent the JSON output.
+Defaults to `0`. This is the number of spaces to indent the JSON
+output.
 
 **`levels`**
 
@@ -90,15 +104,15 @@ Defaults to the following levels. You can specify any levels you like.
 
 **`timeFn`**
 
-Defaults to a function that outputs `new Date().toISOString()`.
-If `false`, we don't add a 'time' element to the JSON output.
-Use your own function to format time however you like.
+Defaults to a function that outputs `new Date().toISOString()`. If
+`false`, we don't add a 'time' element to the JSON output. Use your
+own function to format time however you like.
 
 **`fixerFn`**
 
 Defaults to a function that gets own property names from your JSON.
-This makes it easy to log objects (like `Error`) that aren't
-strictly simple JSON. If `false` we don't mess with your JSON.
+This makes it easy to log objects (like `Error`) that aren't strictly
+simple JSON. If `false` we don't mess with your JSON.
 
 **`replacerFn`**
 
