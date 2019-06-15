@@ -9,7 +9,6 @@ To use with a library, set the level based on an environment variable.
 
 ```js
 const level = process.env.AWESOME_LIBRARY_LOG_LEVEL || 'off'
-const log = new(require('simple-json-log'))({ level })
 ```
 
 ## Quick Start
