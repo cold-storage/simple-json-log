@@ -78,10 +78,14 @@ Defaults to `0`. This is the number of spaces to indent the JSON output.
 
 Defaults to the following levels. You can specify any levels you like.
 
-* trace: 0
-* debug: 1
-* info: 2
-* warn: 3
-* error: 4
-* fatal: 5
-* off: 6
+```js
+{
+  trace: 0,
+  debug: 1,
+  info: 2,
+  warn: 3,
+  error: 4,
+  fatal: 5,
+  off: 6
+}
+```
