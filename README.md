@@ -50,7 +50,7 @@ like.
 
 **`level`**
 
-Defaults to `off`. We do nothing unless you specify a level.
+Defaults to 'off'. We do nothing unless you specify a level.
 
 **`levelAsLabel` and `label`**
 
@@ -62,21 +62,21 @@ Otherwise we use `label` as the message label.
 
 **`levelElement`**
 
-Defaults to `false`. If `true` we add a `level` element to the JSON output.
+Defaults to `false`. If `true` we add a 'level' element to the JSON output.
 
 **`time`**
 
 Defaults to a function that outputs `new Date().toISOString()`.
-If false, we don't add a `time` element to the JSON output.
+If `false`, we don't add a 'time' element to the JSON output.
 You can also use your own function to format time however you like.
 
 **`indent`**
 
-Defaults to 0. This is the number of spaces to indent the JSON output.
+Defaults to `0`. This is the number of spaces to indent the JSON output.
 
 **`levels`**
 
-Defaults to the following. You can specify any levels you like.
+Defaults to the following levels. You can specify any levels you like.
 
 * trace:
 * debug:
