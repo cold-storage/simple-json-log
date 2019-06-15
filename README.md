@@ -110,6 +110,6 @@ NOTE: You most likely don't need both the `fixerFn` and the
 `replacerFn`. One or the other should do it.
 
 \*\*NOTE: I use the term 'JSON' loosely here to mean simple objects
-that you may want to log. The `fixerFn` simplifies any objects you
-pass to the logger to essentially JSON (something you could stringify
-and parse and you would get essentially the same object).
+that you may want to log. The `fixerFn` simplifies objects you pass to
+the logger to essentially JSON (i.e. something you could stringify and
+parse and you would end up with essentially the same object).
