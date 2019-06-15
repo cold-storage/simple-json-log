@@ -5,7 +5,7 @@ A simple JSON logger for Node.js.
 Light weight. No external dependencies. Great for application code or
 libraries.
 
-To use with a library, set the level based on an environment variable.
+To use with a library, set the `level` based on an environment variable.
 
 ```js
 const level = process.env.AWESOME_LIBRARY_LOG_LEVEL || 'off'
@@ -78,10 +78,10 @@ Defaults to `0`. This is the number of spaces to indent the JSON output.
 
 Defaults to the following levels. You can specify any levels you like.
 
-* trace:
-* debug:
-* info:
-* warn:
-* error:
-* fatal:
-* off:
+* trace: 0
+* debug: 1
+* info: 2
+* warn: 3
+* error: 4
+* fatal: 5
+* off: 6
