@@ -1,6 +1,6 @@
 # simple-json-log
 
-A simple JSON logger for Node.js.
+A simple JSON\*\* logger for Node.js.
 
 Light weight. No external dependencies. Great for application code or
 libraries.
@@ -108,3 +108,8 @@ cases where your JSON is really a complex object.
 
 NOTE: You most likely don't need both the `fixerFn` and the
 `replacerFn`. One or the other should do it.
+
+\*\*NOTE: I use the term 'JSON' loosely here to mean simple objects
+that you may want to log. The `fixerFn` simplifies any objects you
+pass to the logger to essentially JSON (something you could stringify
+and parse and you would get essentially the same object).
