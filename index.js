@@ -79,15 +79,15 @@ if (require.main === module) {
     label: 'msg',
     levelAsLabel: false,
     levelElement: true,
-    // time: false,
+    timeFn: false,
     indent: 3,
     // levels: {
     //   bat: 0,
     //   zoo: 1,
     //   monkey: 2
     // },
-    // fixer: false,
-    // replacer: false,
+    // fixerFn: false,
+    replacerFn: false,
   })
   log.info('This is our log.', log, ['out'])
   log.trace('You probably won\'t ever use this.')
@@ -99,7 +99,7 @@ if (require.main === module) {
   log.info({
     some: 'nice JSON here'
   })
-  // log.warn('Geting low on memory.', log, ['out'])
+  log.warn('Geting low on memory.', log, ['out'])
   log.error('Could not get the eggs.', new Error('The truck is out of gas.'), ['stack'])
   log.error(new Error('hard times!'))
   log.fatal('We crashed!')

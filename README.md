@@ -96,12 +96,15 @@ Use your own function to format time however you like.
 
 **`fixerFn`**
 
-  Defaults to a function that gets own property names from your json.
-  This makes it easy to log objects (like `Error`) that aren't
-  strictly JSON simple. If `false` we don't mess with your JSON.
+Defaults to a function that gets own property names from your json.
+This makes it easy to log objects (like `Error`) that aren't
+strictly simple JSON. If `false` we don't mess with your JSON.
 
 **`replacerFn`**
 
-  Defaults to a function that avoids `TypeError: Converting circular
-  structure to JSON`. If `false`, you may get that error in certain
-  cases.
+Defaults to a function that avoids `TypeError: Converting circular
+structure to JSON`. If `false`, you may get that error in certain
+cases where your JSON is really a complex object.
+
+NOTE: You most likely don't need both the `fixerFn` and the
+`replacerFn`. One or the other should do it.
