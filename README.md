@@ -104,7 +104,7 @@ Output
 
 ## `util.format()`
 
-There are times when you want to log an object using `util.format()`.
+There may be times when you want to log an object using `util.format()`.
 
 https://nodejs.org/api/util.html#util_util_format_format_args
 
