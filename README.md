@@ -47,6 +47,37 @@ Output
 {"time":"2019-06-17T03:03:34.953Z","some":"JSON"}
 ```
 
+## Errors (and other objects with non-innumerable properties)
+
+`JSON.stringify()` does't do too well with `Error`s or other objects whose
+properties are not innumerable.
+
+```js
+console.log(JSON.stringify(new Error('What?')))
+```
+
+Output (not too helpful)
+
+```json
+{}
+```
+
+We give you much nicer output.
+
+```js
+log.error(new Error('What?'))
+```
+
+Output
+
+```json
+{
+   "time": "2019-06-17T05:30:21.931Z",
+   "stack": "Error: What?\n    at Object.<anonymous> (/Users/jds/jds/simple-json-log/index.js:123:13)\n    at Module._compile (module.js:653:30)\n    at Object.Module._extensions..js (module.js:664:10)\n    at Module.load (module.js:566:32)\n    at tryModuleLoad (module.js:506:12)\n    at Function.Module._load (module.js:498:3)\n    at Function.Module.runMain (module.js:694:10)\n    at startup (bootstrap_node.js:204:16)\n    at bootstrap_node.js:625:3",
+   "message": "What?"
+}
+```
+
 ## `util.format()`
 
 There are times when you want to log an object using `util.format()`.
@@ -117,19 +148,6 @@ Defaults to the following levels. You can specify any levels you like.
 Defaults to a function that outputs `new Date().toISOString()`. If
 `false`, we don't add a 'time' element to the JSON output. Use your
 own function to format time however you like.
-
-**`replacerFn`**
-
-Defaults to a function that avoids `TypeError: Converting circular
-structure to JSON`. If `false`, you may get that error in certain
-cases where your JSON is really a complex object.
-
-You can also specify your own function. See source code for details.
-
-We pass `replacerFn` to `JSON.stringify()` to generate the final
-output.
-
-See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Syntax
 
 ## Library Usage
 

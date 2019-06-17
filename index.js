@@ -4,22 +4,37 @@
 const util = require('util')
 const isString = (o) =>
   typeof o === 'string' || o instanceof String
-const removeKeysValues = (obj, keys, values) => {
-  if (!keys && !values) {
-    return
+const assignOwnProperties = (keysToSkip, valuesToSkip) => {
+  keysToSkip = keysToSkip || []
+  valuesToSkip = valuesToSkip || []
+  if (isString(keysToSkip)) {
+    keysToSkip = [keysToSkip]
   }
-  for (const key in obj) {
-    if (typeof obj[key] === 'object' && obj[key] !== null) {
-      removeKeysValues(obj[key], keys, values)
-    } else {
-      if (keys && keys.indexOf(key) !== -1) {
-        delete obj[key]
+  if (isString(valuesToSkip)) {
+    valuesToSkip = [valuesToSkip]
+  }
+  const cache = []
+  const aop = (target, src) => {
+    for (const key of Object.getOwnPropertyNames(src)) {
+      if (keysToSkip.indexOf(key) !== -1) {
+        continue
       }
-      if (values && values.indexOf(obj[key]) !== -1) {
-        delete obj[key]
+      if (valuesToSkip.indexOf(src[key]) !== -1) {
+        continue
+      }
+      if (typeof src[key] === 'object' && src[key] !== null) {
+        if (cache.indexOf(src[key]) === -1) {
+          cache.push(src[key])
+          target[key] = {}
+          aop(target[key], src[key])
+        }
+      } else {
+        target[key] = src[key]
       }
     }
+    return target
   }
+  return aop
 }
 class Logger {
   constructor(options) {
@@ -45,24 +60,6 @@ class Logger {
     //   return result
     // }
     this.timeFn = () => new Date().toISOString()
-    this.replacerFn = function(keysToSkip, valuesToSkip) {
-      const cache = []
-      return (key, value) => {
-        if (keysToSkip && keysToSkip.indexOf(key) !== -1) {
-          return
-        }
-        if (valuesToSkip && valuesToSkip.indexOf(value) !== -1) {
-          return
-        }
-        if (typeof value === 'object' && value !== null) {
-          if (cache.indexOf(value) !== -1) {
-            return
-          }
-          cache.push(value)
-        }
-        return value // eslint-disable-line
-      }
-    }
     const buildLog = (level, message, json, keysToSkip, valuesToSkip) => {
       let log = {}
       if (this.timeFn) {
@@ -75,45 +72,29 @@ class Logger {
       if (isString(message)) {
         log[lbl] = message
         if (json) {
-          log = Object.assign(log, json)
+          log = assignOwnProperties(keysToSkip, valuesToSkip)(log, json)
         }
       } else {
-        log = Object.assign(log, message)
-        valuesToSkip = keysToSkip
-        keysToSkip = json
+        log = assignOwnProperties(json, keysToSkip)(log, message)
       }
-      if (keysToSkip && !Array.isArray(keysToSkip)) {
-        keysToSkip = [keysToSkip]
-      }
-      if (valuesToSkip && !Array.isArray(valuesToSkip)) {
-        valuesToSkip = [valuesToSkip]
-      }
-      return {
-        log,
-        keysToSkip,
-        valuesToSkip
-      }
+      return log
     }
     Object.assign(this, options)
     for (const level of Object.keys(this.levels)) {
       this[level] = (message, json, keysToSkip, valuesToSkip) => {
         if (this.levels[level] >= this.levels[this.level]) {
-          const logKeys = buildLog(level, message, json, keysToSkip, valuesToSkip)
-          this.out.write(`${JSON.stringify(
-            logKeys.log,
-            this.replacerFn ? this.replacerFn(logKeys.keysToSkip, logKeys.valuesToSkip) : null,
-            this.indent)}\n`)
+          const log = buildLog(level, message, json, keysToSkip, valuesToSkip)
+          this.out.write(`${JSON.stringify(log, null, this.indent)}\n`)
         }
       }
       this[`${level}UtilFormat`] = (message, json, keysToSkip, valuesToSkip) => {
         if (this.levels[level] >= this.levels[this.level]) {
-          const logKeys = buildLog(level, message, json, keysToSkip, valuesToSkip)
-          removeKeysValues(logKeys.log, logKeys.keysToSkip, logKeys.valuesToSkip)
-          let lg = util.format(logKeys.log)
+          let log = buildLog(level, message, json, keysToSkip, valuesToSkip)
+          log = util.format(log)
           if (!this.indent) {
-            lg = lg.replace(/\n */g, ' ')
+            log = log.replace(/\n */g, ' ')
           }
-          this.out.write(`${lg}\n`)
+          this.out.write(`${log}\n`)
         }
       }
     }
@@ -121,36 +102,36 @@ class Logger {
 }
 exports = module.exports = Logger
 if (require.main === module) {
-  const fs = require('fs')
+  const log = new Logger({
+    // out: fs.createWriteStream('./logfile'),
+    level: 'trace',
+    // label: 'msg',
+    // levelAsLabel: false,
+    // levelElement: true,
+    // timeFn: false,
+    indent: 3,
+    // levels: {
+    //   bat: 0,
+    //   zoo: 1,
+    //   monkey: 2
+    // },
+    // replacerFn: false,
+  })
 
-  // const log = new Logger({
-  //   // out: fs.createWriteStream('./logfile'),
-  //   level: 'trace',
-  //   label: 'msg',
-  //   levelAsLabel: false,
-  //   levelElement: true,
-  //   timeFn: false,
-  //   indent: 3,
-  //   // levels: {
-  //   //   bat: 0,
-  //   //   zoo: 1,
-  //   //   monkey: 2
-  //   // },
-  //   // fixerFn: false,
-  //   replacerFn: false,
-  // })
+  const e = new Error('What!?!')
 
-  const findUp = require('find-up')
-  const path = require('path')
-  const optPath = findUp.sync('.sjl.js')
-  const opts = require(path.relative(__dirname, optPath))
-  const log = new Logger(opts)
+  log.error(new Error('What?'))
 
-log.info('Hello world!')
-log.info('Hello world!', { some: 'JSON', password: 'letmein' })
-log.info('Hello world!', { some: 'JSON', password: 'letmein' }, ['password'])
-log.info('Hello world!', { some: 'JSON', password: 'letmein' }, [], ['letmein'])
-log.info({ some: 'JSON', password: 'letmein' })
-log.info({ some: 'JSON', password: 'letmein' }, 'password')
-log.info({ some: 'JSON', password: 'letmein' }, null, 'letmein')
+  // console.log('e')
+  // console.log(e)
+  // console.log('`${e}`')
+  // console.log(`${e}`)
+  // console.log('e.message')
+  // console.log(e.message)
+  // console.log('e.stack')
+  // console.log(e.stack)
+  // console.log('`${util.format(e)}\n`')
+  // process.stdout.write(`${util.format(e)}\n`)
+  // console.log('')
+  // process.stdout.write(JSON.stringify(new Error('What?')))
 }
