@@ -78,6 +78,30 @@ Output
 }
 ```
 
+## Circular Structures
+
+`JSON.stringify()` also doesn't do well with objects that have
+circular references.
+
+The following code will give you the dreaded `TypeError: Converting
+circular structure to JSON`.
+
+```js
+JSON.stringify(log)
+```
+
+We handle circular references without throwing an error.
+
+```js
+log.info(log)
+```
+
+Output
+
+```json
+{"time":"2019-06-17T05:46:46.176Z","out":{"connecting":false,"_hadError":false,"_handle":{"writeQueueSize":0},"_parent":null,"_host":null,"_readableState":{"objectMode":false,"highWaterMark":16384,"buffer":{"head":null,"tail":null,"length":0},"length":0,"pipes":null,"pipesCount":0,"flowing":null,"ended":false,"endEmitted":false,"reading":false,"sync":true,"needReadable":false,"emittedReadable":false,"readableListening":false,"resumeScheduled":false,"destroyed":false,"defaultEncoding":"utf8","awaitDrain":0,"readingMore":false,"decoder":null,"encoding":null},"readable":false,"domain":null,"_events":{},"_eventsCount":2,"_writableState":{"objectMode":false,"highWaterMark":16384,"finalCalled":false,"needDrain":false,"ending":false,"ended":false,"finished":false,"destroyed":false,"decodeStrings":false,"defaultEncoding":"utf8","length":0,"writing":false,"corked":0,"sync":true,"bufferProcessing":false,"writecb":null,"writelen":0,"bufferedRequest":null,"lastBufferedRequest":null,"pendingcb":0,"prefinished":false,"errorEmitted":false,"bufferedRequestCount":0,"corkedRequestsFree":{"next":null,"entry":null}},"writable":true,"allowHalfOpen":false,"_bytesDispatched":0,"_sockname":null,"_writev":null,"_pendingData":null,"_pendingEncoding":"","server":null,"_server":null,"columns":167,"rows":52,"_type":"tty","fd":1,"_isStdio":true},"level":"trace","label":"message","levelAsLabel":true,"levelElement":false,"indent":0,"levels":{"trace":0,"debug":1,"info":2,"warn":3,"error":4,"fatal":5,"off":6}}
+```
+
 ## `util.format()`
 
 There are times when you want to log an object using `util.format()`.

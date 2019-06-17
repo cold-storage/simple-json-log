@@ -104,7 +104,7 @@ if (require.main === module) {
     // levelAsLabel: false,
     // levelElement: true,
     // timeFn: false,
-    indent: 3,
+    // indent: 3,
     // levels: {
     //   bat: 0,
     //   zoo: 1,
@@ -113,9 +113,12 @@ if (require.main === module) {
     // replacerFn: false,
   })
 
-  const e = new Error('What!?!')
 
-  log.error(new Error('What?'))
+  log.info(log)
+
+  // const e = new Error('What!?!')
+
+  // log.error(new Error('What?'))
 
   // console.log('e')
   // console.log(e)
