@@ -40,6 +40,35 @@ where I want to list out all the properties to include.
 Finally, I want to be able to specify property **values** to exclude
 as well as property names to exclude.
 
+## Examples
+
+Parameters are a string message, followed by a JSON object, followed
+by an array of keys you want to remove from the output, followed by an
+array of values you want to remove from the output.
+
+```js
+log.info('Hello world!')
+log.info('Hello world!', { some: 'JSON', password: 'letmein' })
+log.info('Hello world!', { some: 'JSON', password: 'letmein' }, ['password'])
+log.info('Hello world!', { some: 'JSON', password: 'letmein' }, [], ['letmein'])
+log.info({ some: 'JSON', password: 'letmein' })
+// If there's only one key or value to remove a string works too.
+log.info({ some: 'JSON', password: 'letmein' }, 'password')
+log.info({ some: 'JSON', password: 'letmein' }, null, 'letmein')
+```
+
+Output
+
+```json
+{"time":"2019-06-17T03:03:34.952Z","info":"Hello world!"}
+{"time":"2019-06-17T03:03:34.953Z","info":"Hello world!","some":"JSON","password":"letmein"}
+{"time":"2019-06-17T03:03:34.953Z","info":"Hello world!","some":"JSON"}
+{"time":"2019-06-17T03:03:34.953Z","info":"Hello world!","some":"JSON"}
+{"time":"2019-06-17T03:03:34.953Z","some":"JSON","password":"letmein"}
+{"time":"2019-06-17T03:03:34.953Z","some":"JSON"}
+{"time":"2019-06-17T03:03:34.953Z","some":"JSON"}
+```
+
 ## Options
 
 **`out`**
