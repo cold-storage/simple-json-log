@@ -23,7 +23,7 @@ const assignOwnProperties = (keysToSkip, valuesToSkip) => {
       if (valuesToSkip.indexOf(src[key]) !== -1) {
         continue
       }
-      if (typeof src[key] === 'object' && src[key] !== null) {
+      if (!src[key] instanceof Date && typeof src[key] === 'object' && src[key] !== null) {
         if (cache.indexOf(src[key]) === -1) {
           cache.push(src[key])
           target[key] = {}
@@ -131,15 +131,13 @@ if (require.main === module) {
     logLevelFile: 'log.level'
   })
 
-  setInterval(() => {
-    log.info(log.level)
-  }, 10000)
+  // setInterval(() => {
+  //   log.info(log.level)
+  // }, 10000)
 
+  log.error(new Error('What?'))
 
   // const e = new Error('What!?!')
-
-  // log.error(new Error('What?'))
-
   // console.log('e')
   // console.log(e)
   // console.log('`${e}`')
