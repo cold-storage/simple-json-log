@@ -54,11 +54,6 @@ class Logger {
       fatal: 5,
       off: 6
     }
-    // this.toJSON = () => {
-    //   const result = Object.assign({}, this)
-    //   delete result.out
-    //   return result
-    // }
     this.timeFn = () => new Date().toISOString()
     const buildLog = (level, message, json, keysToSkip, valuesToSkip) => {
       let log = {}
