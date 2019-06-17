@@ -77,6 +77,13 @@ class Logger {
       return log
     }
     Object.assign(this, options)
+    if (this.indent) {
+      try {
+        this.indent = parseInt(this.indent, 10)
+      } catch (e) {
+        // ignore
+      }
+    }
     if (this.logLevelFile) {
       process.on('SIGHUP', () => {
         fs.readFile(this.logLevelFile, 'utf8', (err, data) => {
@@ -135,7 +142,13 @@ if (require.main === module) {
   //   log.info(log.level)
   // }, 10000)
 
-  log.error(new Error('What?'))
+  if ('0') {
+    console.log(JSON.stringify({
+      some: {
+        json: 'foo'
+      }
+    }, null, '3'))
+  }
 
   // const e = new Error('What!?!')
   // console.log('e')
