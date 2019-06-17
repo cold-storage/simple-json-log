@@ -21,24 +21,30 @@ Output
 We make it easy to log a string message and/or a JSON object.
 
 Parameters are a string message, followed by a JSON object, followed
-by an array of keys that you want to remove from the output.
+by an array of keys you want to remove from the output, followed by an
+array of values you want to remove from the output.
 
 ```js
-log.info('Hello log world!')
-log.info('Hello log world!', { some: 'nice JSON here', password: 'letmein' })
-log.info('Hello log world!', { some: 'nice JSON here', password: 'letmein' }, ['password'])
-log.info({ some: 'nice JSON here', password: 'letmein' })
-log.info({ some: 'nice JSON here', password: 'letmein' }, ['password'])
+log.info('Hello world!')
+log.info('Hello world!', { some: 'JSON', password: 'letmein' })
+log.info('Hello world!', { some: 'JSON', password: 'letmein' }, ['password'])
+log.info('Hello world!', { some: 'JSON', password: 'letmein' }, [], ['letmein'])
+log.info({ some: 'JSON', password: 'letmein' })
+// If there's only one key or value to remove a string works too.
+log.info({ some: 'JSON', password: 'letmein' }, 'password')
+log.info({ some: 'JSON', password: 'letmein' }, null, 'letmein')
 ```
 
 Output
 
 ```json
-{"time":"2019-06-17T01:39:44.449Z","info":"Hello log world!"}
-{"time":"2019-06-17T01:39:44.451Z","info":"Hello log world!","some":"nice JSON here","password":"letmein"}
-{"time":"2019-06-17T01:39:44.451Z","info":"Hello log world!","some":"nice JSON here"}
-{"time":"2019-06-17T01:39:44.451Z","some":"nice JSON here","password":"letmein"}
-{"time":"2019-06-17T01:39:44.451Z","some":"nice JSON here"}
+{"time":"2019-06-17T03:03:34.952Z","info":"Hello world!"}
+{"time":"2019-06-17T03:03:34.953Z","info":"Hello world!","some":"JSON","password":"letmein"}
+{"time":"2019-06-17T03:03:34.953Z","info":"Hello world!","some":"JSON"}
+{"time":"2019-06-17T03:03:34.953Z","info":"Hello world!","some":"JSON"}
+{"time":"2019-06-17T03:03:34.953Z","some":"JSON","password":"letmein"}
+{"time":"2019-06-17T03:03:34.953Z","some":"JSON"}
+{"time":"2019-06-17T03:03:34.953Z","some":"JSON"}
 ```
 
 ## `util.format()`

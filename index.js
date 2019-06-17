@@ -4,6 +4,23 @@
 const util = require('util')
 const isString = (o) =>
   typeof o === 'string' || o instanceof String
+const removeKeysValues = (obj, keys, values) => {
+  if (!keys && !values) {
+    return
+  }
+  for (const key in obj) {
+    if (typeof obj[key] === 'object' && obj[key] !== null) {
+      removeKeysValues(obj[key], keys, values)
+    } else {
+      if (keys && keys.indexOf(key) !== -1) {
+        delete obj[key]
+      }
+      if (values && values.indexOf(obj[key]) !== -1) {
+        delete obj[key]
+      }
+    }
+  }
+}
 class Logger {
   constructor(options) {
     options = options || {}
@@ -28,10 +45,13 @@ class Logger {
     //   return result
     // }
     this.timeFn = () => new Date().toISOString()
-    this.replacerFn = function(keysToSkip) {
+    this.replacerFn = function(keysToSkip, valuesToSkip) {
       const cache = []
       return (key, value) => {
         if (keysToSkip && keysToSkip.indexOf(key) !== -1) {
+          return
+        }
+        if (valuesToSkip && valuesToSkip.indexOf(value) !== -1) {
           return
         }
         if (typeof value === 'object' && value !== null) {
@@ -43,7 +63,7 @@ class Logger {
         return value // eslint-disable-line
       }
     }
-    const buildLog = (level, message, json, keysToSkip) => {
+    const buildLog = (level, message, json, keysToSkip, valuesToSkip) => {
       let log = {}
       if (this.timeFn) {
         log.time = this.timeFn()
@@ -59,32 +79,36 @@ class Logger {
         }
       } else {
         log = Object.assign(log, message)
+        valuesToSkip = keysToSkip
         keysToSkip = json
+      }
+      if (keysToSkip && !Array.isArray(keysToSkip)) {
+        keysToSkip = [keysToSkip]
+      }
+      if (valuesToSkip && !Array.isArray(valuesToSkip)) {
+        valuesToSkip = [valuesToSkip]
       }
       return {
         log,
-        keysToSkip
+        keysToSkip,
+        valuesToSkip
       }
     }
     Object.assign(this, options)
     for (const level of Object.keys(this.levels)) {
-      this[level] = (message, json, keysToSkip) => {
+      this[level] = (message, json, keysToSkip, valuesToSkip) => {
         if (this.levels[level] >= this.levels[this.level]) {
-          const logKeys = buildLog(level, message, json, keysToSkip)
+          const logKeys = buildLog(level, message, json, keysToSkip, valuesToSkip)
           this.out.write(`${JSON.stringify(
             logKeys.log,
-            this.replacerFn ? this.replacerFn(logKeys.keysToSkip) : null,
+            this.replacerFn ? this.replacerFn(logKeys.keysToSkip, logKeys.valuesToSkip) : null,
             this.indent)}\n`)
         }
       }
-      this[`${level}UtilFormat`] = (message, json, keysToSkip) => {
+      this[`${level}UtilFormat`] = (message, json, keysToSkip, valuesToSkip) => {
         if (this.levels[level] >= this.levels[this.level]) {
-          const logKeys = buildLog(level, message, json, keysToSkip)
-          if (logKeys.keysToSkip) {
-            for (const key of logKeys.keysToSkip) {
-              delete logKeys.log[key]
-            }
-          }
+          const logKeys = buildLog(level, message, json, keysToSkip, valuesToSkip)
+          removeKeysValues(logKeys.log, logKeys.keysToSkip, logKeys.valuesToSkip)
           let lg = util.format(logKeys.log)
           if (!this.indent) {
             lg = lg.replace(/\n */g, ' ')
@@ -122,23 +146,11 @@ if (require.main === module) {
   const opts = require(path.relative(__dirname, optPath))
   const log = new Logger(opts)
 
-  // log.info('This is our log.', log, ['out'])
-  // log.trace('You probably won\'t ever use this.')
-  // log.debug('This is quite a bit of detail.')
-  // log.info('Hello log world!')
-  // log.info('Hello log world!', {
-  //   some: 'nice JSON here'
-  // })
-  // log.info({
-  //   some: 'nice JSON here'
-  // })
-  // log.warn('Here is our log', log, ['out'])
-  // log.warnUtilFormat('Here is our log', log, ['out'])
-  // log.info('Hello log world!')
-  // log.info('Hello log world!', { some: 'nice JSON here', password: 'letmein' })
-  // log.info('Hello log world!', { some: 'nice JSON here', password: 'letmein' }, ['password'])
-  // log.info({ some: 'nice JSON here', password: 'letmein' })
-  // log.info({ some: 'nice JSON here', password: 'letmein' }, ['password'])
-  log.info(log)
-  log.infoUtilFormat(log)
+log.info('Hello world!')
+log.info('Hello world!', { some: 'JSON', password: 'letmein' })
+log.info('Hello world!', { some: 'JSON', password: 'letmein' }, ['password'])
+log.info('Hello world!', { some: 'JSON', password: 'letmein' }, [], ['letmein'])
+log.info({ some: 'JSON', password: 'letmein' })
+log.info({ some: 'JSON', password: 'letmein' }, 'password')
+log.info({ some: 'JSON', password: 'letmein' }, null, 'letmein')
 }
