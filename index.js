@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 'use strict'
+const util = require('util')
 const isString = (o) =>
   typeof o === 'string' || o instanceof String
 class Logger {
@@ -21,50 +22,74 @@ class Logger {
       fatal: 5,
       off: 6
     }
-    this.timeFn = () => {
-      return new Date().toISOString()
-    }
-    this.fixerFn = (o, propsToSkip) => {
-      const fixed = {}
-      Object.getOwnPropertyNames(o).forEach(function(key) {
-        if (!propsToSkip || propsToSkip.indexOf(key) === -1) {
-          fixed[key] = o[key]
-        }
-      });
-      return fixed
-    }
-    this.replacerFn = (key, value) => {
-      if (typeof value === 'object' && value !== null) {
-        if (this.cache.indexOf(value) !== -1) {
+    // this.toJSON = () => {
+    //   const result = Object.assign({}, this)
+    //   delete result.out
+    //   return result
+    // }
+    this.timeFn = () => new Date().toISOString()
+    this.replacerFn = function(keysToSkip) {
+      const cache = []
+      return (key, value) => {
+        if (keysToSkip && keysToSkip.indexOf(key) !== -1) {
           return
         }
-        this.cache.push(value)
+        if (typeof value === 'object' && value !== null) {
+          if (cache.indexOf(value) !== -1) {
+            return
+          }
+          cache.push(value)
+        }
+        return value // eslint-disable-line
       }
-      return value
+    }
+    const buildLog = (level, message, json, keysToSkip) => {
+      let log = {}
+      if (this.timeFn) {
+        log.time = this.timeFn()
+      }
+      if (this.levelElement) {
+        log.level = level
+      }
+      const lbl = this.levelAsLabel ? level : this.label
+      if (isString(message)) {
+        log[lbl] = message
+        if (json) {
+          log = Object.assign(log, json)
+        }
+      } else {
+        log = Object.assign(log, message)
+        keysToSkip = json
+      }
+      return {
+        log,
+        keysToSkip
+      }
     }
     Object.assign(this, options)
-    for (let level of Object.keys(this.levels)) {
-      this[level] = (message, json, propsToSkip) => {
+    for (const level of Object.keys(this.levels)) {
+      this[level] = (message, json, keysToSkip) => {
         if (this.levels[level] >= this.levels[this.level]) {
-          let options = {}
-          if (this.timeFn) {
-            options.time = this.timeFn()
+          const logKeys = buildLog(level, message, json, keysToSkip)
+          this.out.write(`${JSON.stringify(
+            logKeys.log,
+            this.replacerFn ? this.replacerFn(logKeys.keysToSkip) : null,
+            this.indent)}\n`)
+        }
+      }
+      this[`${level}UtilFormat`] = (message, json, keysToSkip) => {
+        if (this.levels[level] >= this.levels[this.level]) {
+          const logKeys = buildLog(level, message, json, keysToSkip)
+          if (logKeys.keysToSkip) {
+            for (const key of logKeys.keysToSkip) {
+              delete logKeys.log[key]
+            }
           }
-          if (this.levelElement) {
-            options.level = level
+          let lg = util.format(logKeys.log)
+          if (!this.indent) {
+            lg = lg.replace(/\n */g, ' ')
           }
-          const lbl = this.levelAsLabel ? level : this.label
-          if (json) {
-            options[lbl] = message
-            options = Object.assign(options, this.fixerFn ? this.fixerFn(json, propsToSkip) : json)
-          } else if (!isString(message)) {
-            options = Object.assign(options, this.fixerFn ? this.fixerFn(message, propsToSkip) : message)
-          } else {
-            options[lbl] = message
-          }
-          this.cache = []
-          this.out.write(`${JSON.stringify(options, this.replacerFn, this.indent)}\n`)
-          this.cache = null
+          this.out.write(`${lg}\n`)
         }
       }
     }
@@ -97,18 +122,23 @@ if (require.main === module) {
   const opts = require(path.relative(__dirname, optPath))
   const log = new Logger(opts)
 
-  log.info('This is our log.', log, ['out'])
-  log.trace('You probably won\'t ever use this.')
-  log.debug('This is quite a bit of detail.')
-  log.info('Hello log world!')
-  log.info('Hello log world!', {
-    some: 'nice JSON here'
-  })
-  log.info({
-    some: 'nice JSON here'
-  })
-  log.warn('Geting low on memory.', log, ['out'])
-  log.error('Could not get the eggs.', new Error('The truck is out of gas.'), ['stack'])
-  log.error(new Error('hard times!'))
-  log.fatal('We crashed!')
+  // log.info('This is our log.', log, ['out'])
+  // log.trace('You probably won\'t ever use this.')
+  // log.debug('This is quite a bit of detail.')
+  // log.info('Hello log world!')
+  // log.info('Hello log world!', {
+  //   some: 'nice JSON here'
+  // })
+  // log.info({
+  //   some: 'nice JSON here'
+  // })
+  // log.warn('Here is our log', log, ['out'])
+  // log.warnUtilFormat('Here is our log', log, ['out'])
+  // log.info('Hello log world!')
+  // log.info('Hello log world!', { some: 'nice JSON here', password: 'letmein' })
+  // log.info('Hello log world!', { some: 'nice JSON here', password: 'letmein' }, ['password'])
+  // log.info({ some: 'nice JSON here', password: 'letmein' })
+  // log.info({ some: 'nice JSON here', password: 'letmein' }, ['password'])
+  log.info(log)
+  log.infoUtilFormat(log)
 }

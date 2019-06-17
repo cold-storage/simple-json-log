@@ -1,6 +1,6 @@
 {
   "name": "simple-json-log",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "keywords": "log logger logging node Node.js JSON simple easy",
   "description": "Simple JSON logger for Node.js",
   "main": "index.js",
@@ -9,5 +9,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/johndstein/simple-json-log.git"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "find-up": "^4.0.0"
   }
 }
