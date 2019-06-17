@@ -116,7 +116,8 @@ Defaults to the following levels. You can specify any levels you like.
 **`logLevelFile`**
 
 Defaults to null. If set we will read this file and set the log level
-based on the file contents any time we receive `SIGHUP`.
+based on the file contents any time we receive
+[SIGHUP](https://unix.stackexchange.com/a/15606).
 
 File should contain just the log level. Nothing else.
 
