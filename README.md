@@ -40,6 +40,56 @@ where I want to list out all the properties to include.
 Finally, I want to be able to specify property **values** to exclude
 as well as property names to exclude.
 
+## Options
+
+**`out`**
+
+Defaults to `process.stdout`. You can use any output stream you like.
+
+**`level`**
+
+Defaults to 'off'. We don't do anything unless you specify a level.
+
+**`levelAsLabel` and `label`**
+
+`levelAsLabel` defaults to `true`.
+`label` defaults to 'message'.
+
+If `levelAsLabel` is `true`, we use `level` as the message label.
+Otherwise we use `label` as the message label.
+
+**`levelElement`**
+
+Defaults to `false`. If `true` we add a 'level' element to the JSON
+output.
+
+**`indent`**
+
+Defaults to `0`. This is the number of spaces to indent the JSON
+output.
+
+**`levels`**
+
+Defaults to the following levels. You can specify any levels you like.
+
+```js
+{
+  trace: 0,
+  debug: 1,
+  info: 2,
+  warn: 3,
+  error: 4,
+  fatal: 5,
+  off: 6
+}
+```
+
+**`timeFn`**
+
+Defaults to a function that outputs `new Date().toISOString()`. If
+`false`, we don't add a 'time' element to the JSON output. Use your
+own function to format time however you like.
+
 ## TODO
 
 * Configurable object structure
