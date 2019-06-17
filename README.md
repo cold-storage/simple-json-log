@@ -113,6 +113,20 @@ Defaults to the following levels. You can specify any levels you like.
 }
 ```
 
+**`logLevelFile`**
+
+Defaults to null. If set we will read this file and set the log level
+based on the file contents any time we receive `SIGHUP`.
+
+File should contain just the log level. Nothing else.
+
+You can send `SIGHUP` to your process like this (where `5372` is the
+pid of your process).
+
+```sh
+kill -1 5372
+```
+
 **`timeFn`**
 
 Defaults to a function that outputs `new Date().toISOString()`. If

@@ -2,6 +2,7 @@
 
 'use strict'
 const util = require('util')
+const fs = require('fs')
 const isString = (o) =>
   typeof o === 'string' || o instanceof String
 const assignOwnProperties = (keysToSkip, valuesToSkip) => {
@@ -54,6 +55,7 @@ class Logger {
       fatal: 5,
       off: 6
     }
+    this.logLevelFile = null
     this.timeFn = () => new Date().toISOString()
     const buildLog = (level, message, json, keysToSkip, valuesToSkip) => {
       let log = {}
@@ -75,6 +77,21 @@ class Logger {
       return log
     }
     Object.assign(this, options)
+    if (this.logLevelFile) {
+      process.on('SIGHUP', () => {
+        fs.readFile(this.logLevelFile, 'utf8', (err, data) => {
+          if (!err) {
+            this.level = data.trim()
+          }
+        })
+      })
+      // setInterval(() => {
+      //   console.log(this.logLevelFile)
+      //   console.log(process.env[this.logLevelFile])
+      //   this.level =
+      //     process.env[this.logLevelFile] || 'off' // eslint-disable-line
+      // }, 10000)
+    }
     for (const level of Object.keys(this.levels)) {
       this[level] = (message, json, keysToSkip, valuesToSkip) => {
         if (this.levels[level] >= this.levels[this.level]) {
@@ -111,10 +128,13 @@ if (require.main === module) {
     //   monkey: 2
     // },
     // replacerFn: false,
+    logLevelFile: 'log.level'
   })
 
+  setInterval(() => {
+    log.info(log.level)
+  }, 10000)
 
-  log.info(log)
 
   // const e = new Error('What!?!')
 
