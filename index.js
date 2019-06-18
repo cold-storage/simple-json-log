@@ -93,11 +93,13 @@ class Logger {
       })
     }
     if (this.logLevelFile) {
-      if (this.logLevelPollSeconds) {
-        setInterval(readLogLevelFile, this.logLevelPollSeconds * 1000)
-      } else {
-        process.on('SIGHUP', readLogLevelFile)
-      }
+      readLogLevelFile()
+      fs.watchFile(this.logLevelFile, readLogLevelFile)
+      // if (this.logLevelPollSeconds) {
+      //   setInterval(readLogLevelFile, this.logLevelPollSeconds * 1000)
+      // } else {
+      //   process.on('SIGHUP', readLogLevelFile)
+      // }
     }
     for (const level of Object.keys(this.levels)) {
       this[level] = (message, json, keysToSkip, valuesToSkip) => {
@@ -136,7 +138,7 @@ if (require.main === module) {
     // },
     // replacerFn: false,
     logLevelFile: 'log.level',
-    logLevelPollSeconds: 5,
+    logLevelPollSeconds: 20,
   })
 
   setInterval(() => {

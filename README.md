@@ -116,23 +116,11 @@ Defaults to the following levels. You can specify any levels you like.
 **`logLevelFile`**
 
 Defaults to null. If set we will read this file and set the log level
-based on the file contents any time we receive
-[SIGHUP](https://unix.stackexchange.com/a/15606).
+based on the file contents on startup and any time the file changes.
 
 File should contain just the log level. Nothing else.
 
-You can send `SIGHUP` to your process like this (where `5372` is the
-pid of your process).
-
-```sh
-kill -SIGHUP 5372
-```
-
-**`logLevelPollSeconds`**
-
-Defaults to null. If `logLevelFile` is set and `logLevelPollSeconds`
-is set we will poll for log level file changes instead of listening
-for `SIGHUP`.
+Uses [fs.watchFile()](https://nodejs.org/docs/latest/api/fs.html#fs_fs_watchfile_filename_options_listener)
 
 **`timeFn`**
 
