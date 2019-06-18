@@ -122,6 +122,10 @@ File should contain just the log level. Nothing else.
 
 Uses [fs.watchFile()](https://nodejs.org/docs/latest/api/fs.html#fs_fs_watchfile_filename_options_listener)
 
+**`keysToSkip`** and **`valuesToSkip`**
+
+Defaults to []. These are keys and values that should always be skipped.
+
 **`timeFn`**
 
 Defaults to a function that outputs `new Date().toISOString()`. If

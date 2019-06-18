@@ -3,34 +3,31 @@
 'use strict'
 const util = require('util')
 const fs = require('fs')
+const isFunction = (o) =>
+  typeof o === 'function'
 const isString = (o) =>
   typeof o === 'string' || o instanceof String
-const assignOwnProperties = (keysToSkip, valuesToSkip) => {
-  keysToSkip = keysToSkip || []
-  valuesToSkip = valuesToSkip || []
-  if (isString(keysToSkip)) {
-    keysToSkip = [keysToSkip]
-  }
-  if (isString(valuesToSkip)) {
-    valuesToSkip = [valuesToSkip]
-  }
+const assignOwnProperties = (keysToSkip = [], valuesToSkip = []) => {
   const cache = []
   const aop = (target, src) => {
     for (const key of Object.getOwnPropertyNames(src)) {
       if (keysToSkip.indexOf(key) !== -1) {
         continue
       }
-      if (valuesToSkip.indexOf(src[key]) !== -1) {
-        continue
-      }
-      if (!src[key] instanceof Date && typeof src[key] === 'object' && src[key] !== null) {
+      if (src[key] && !isFunction(src[key]) && !isString(src[key]) && Object.getOwnPropertyNames(src[key]).length) {
         if (cache.indexOf(src[key]) === -1) {
           cache.push(src[key])
-          target[key] = {}
+          target[key] = Array.isArray(src[key]) ? [] : {}
           aop(target[key], src[key])
         }
       } else {
-        target[key] = src[key]
+        if (valuesToSkip.indexOf(src[key]) !== -1) {
+          continue
+        }
+        target[key] = isFunction(src[key]) ? '(function)' : src[key]
+        if (Array.isArray(src[key])) {
+          aop(target[key], src[key])
+        }
       }
     }
     return target
@@ -57,6 +54,8 @@ class Logger {
     }
     this.logLevelFile = null
     this.logLevelPollSeconds = null
+    this.keysToSkip = []
+    this.valuesToSkip = []
     this.timeFn = () => new Date().toISOString()
     const buildLog = (level, message, json, keysToSkip, valuesToSkip) => {
       let log = {}
@@ -70,11 +69,27 @@ class Logger {
       if (isString(message)) {
         log[lbl] = message
         if (json) {
-          log = assignOwnProperties(keysToSkip, valuesToSkip)(log, json)
+          keysToSkip = keysToSkip || []
+          valuesToSkip = valuesToSkip || []
+        } else {
+          keysToSkip = []
+          valuesToSkip = []
+          json = {}
         }
       } else {
-        log = assignOwnProperties(json, keysToSkip)(log, message)
+        valuesToSkip = keysToSkip || []
+        keysToSkip = json || []
+        json = message
       }
+      if (isString(keysToSkip)) {
+        keysToSkip = [keysToSkip]
+      }
+      if (isString(valuesToSkip)) {
+        valuesToSkip = [valuesToSkip]
+      }
+      keysToSkip.push(...this.keysToSkip)
+      valuesToSkip.push(...this.valuesToSkip)
+      log = assignOwnProperties(keysToSkip, valuesToSkip)(log, json)
       return log
     }
     Object.assign(this, options)
@@ -94,12 +109,10 @@ class Logger {
     }
     if (this.logLevelFile) {
       readLogLevelFile()
-      fs.watchFile(this.logLevelFile, readLogLevelFile)
-      // if (this.logLevelPollSeconds) {
-      //   setInterval(readLogLevelFile, this.logLevelPollSeconds * 1000)
-      // } else {
-      //   process.on('SIGHUP', readLogLevelFile)
-      // }
+      fs.watchFile(this.logLevelFile, {
+        persistent: false,
+        interval: 10000
+      }, readLogLevelFile)
     }
     for (const level of Object.keys(this.levels)) {
       this[level] = (message, json, keysToSkip, valuesToSkip) => {
@@ -130,20 +143,34 @@ if (require.main === module) {
     // levelAsLabel: false,
     // levelElement: true,
     // timeFn: false,
-    // indent: 3,
+    indent: 3,
     // levels: {
     //   bat: 0,
     //   zoo: 1,
     //   monkey: 2
     // },
     // replacerFn: false,
-    logLevelFile: 'log.level',
-    logLevelPollSeconds: 20,
+    // logLevelFile: 'log.level',
+    // logLevelPollSeconds: 20,
+    keysToSkip: ['wonder'],
+    valuesToSkip: ['bread'],
   })
 
-  setInterval(() => {
-    log.info(log.level)
-  }, 3000)
+  const x = {
+    i: {
+      bread: 'wonder',
+      other: {
+        wonder: 'about',
+        things: 'foo',
+        xxx: 'bread'
+      }
+    }
+  }
+  log.info(x)
+
+  // setInterval(() => {
+  //   log.info(log.level)
+  // }, 3000)
 
   // if ('0') {
   //   console.log(JSON.stringify({
