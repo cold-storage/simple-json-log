@@ -124,7 +124,8 @@ Uses [fs.watchFile()](https://nodejs.org/docs/latest/api/fs.html#fs_fs_watchfile
 
 **`keysToSkip`** and **`valuesToSkip`**
 
-Defaults to []. These are keys and values that should always be skipped.
+Defaults to []. These are keys (property names) and values that should
+always be skipped.
 
 **`timeFn`**
 
