@@ -167,5 +167,6 @@ to use in library code.
 JSON is really [JSON](https://www.json.org/)
 
 I use the term 'JSON' loosely here to mean simple objects that are
-displayed nicely by `JSON.stringify()`.
+displayed nicely (or you wish were displayed nicely) by
+`JSON.stringify()`.
 
