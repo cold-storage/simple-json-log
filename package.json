@@ -1,6 +1,6 @@
 {
   "name": "simple-json-log",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "keywords": "log logger logging node Node.js JSON simple easy",
   "description": "Simple JSON logger for Node.js",
   "main": "index.js",

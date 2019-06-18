@@ -56,6 +56,7 @@ class Logger {
       off: 6
     }
     this.logLevelFile = null
+    this.logLevelPollSeconds = null
     this.timeFn = () => new Date().toISOString()
     const buildLog = (level, message, json, keysToSkip, valuesToSkip) => {
       let log = {}
@@ -84,20 +85,19 @@ class Logger {
         // ignore
       }
     }
-    if (this.logLevelFile) {
-      process.on('SIGHUP', () => {
-        fs.readFile(this.logLevelFile, 'utf8', (err, data) => {
-          if (!err) {
-            this.level = data.trim()
-          }
-        })
+    const readLogLevelFile = () => {
+      fs.readFile(this.logLevelFile, 'utf8', (err, data) => {
+        if (!err) {
+          this.level = data.trim()
+        }
       })
-      // setInterval(() => {
-      //   console.log(this.logLevelFile)
-      //   console.log(process.env[this.logLevelFile])
-      //   this.level =
-      //     process.env[this.logLevelFile] || 'off' // eslint-disable-line
-      // }, 10000)
+    }
+    if (this.logLevelFile) {
+      if (this.logLevelPollSeconds) {
+        setInterval(readLogLevelFile, this.logLevelPollSeconds * 1000)
+      } else {
+        process.on('SIGHUP', readLogLevelFile)
+      }
     }
     for (const level of Object.keys(this.levels)) {
       this[level] = (message, json, keysToSkip, valuesToSkip) => {
@@ -135,20 +135,21 @@ if (require.main === module) {
     //   monkey: 2
     // },
     // replacerFn: false,
-    logLevelFile: 'log.level'
+    logLevelFile: 'log.level',
+    logLevelPollSeconds: 5,
   })
 
-  // setInterval(() => {
-  //   log.info(log.level)
-  // }, 10000)
+  setInterval(() => {
+    log.info(log.level)
+  }, 3000)
 
-  if ('0') {
-    console.log(JSON.stringify({
-      some: {
-        json: 'foo'
-      }
-    }, null, '3'))
-  }
+  // if ('0') {
+  //   console.log(JSON.stringify({
+  //     some: {
+  //       json: 'foo'
+  //     }
+  //   }, null, '3'))
+  // }
 
   // const e = new Error('What!?!')
   // console.log('e')

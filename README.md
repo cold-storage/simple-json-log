@@ -125,8 +125,14 @@ You can send `SIGHUP` to your process like this (where `5372` is the
 pid of your process).
 
 ```sh
-kill -1 5372
+kill -SIGHUP 5372
 ```
+
+**`logLevelPollSeconds`**
+
+Defaults to null. If `logLevelFile` is set and `logLevelPollSeconds`
+is set we will poll for log level file changes instead of listening
+for `SIGHUP`.
 
 **`timeFn`**
 
