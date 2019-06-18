@@ -143,7 +143,7 @@ if (require.main === module) {
     // levelAsLabel: false,
     // levelElement: true,
     // timeFn: false,
-    indent: 3,
+    indent: 1,
     // levels: {
     //   bat: 0,
     //   zoo: 1,
@@ -152,22 +152,47 @@ if (require.main === module) {
     // replacerFn: false,
     // logLevelFile: 'log.level',
     // logLevelPollSeconds: 20,
-    keysToSkip: ['wonder'],
-    valuesToSkip: ['bread'],
+    keysToSkip: ['password', 'ssn'],
+    valuesToSkip: ['supersecret'],
   })
 
-  const x = {
-    i: {
-      bread: 'wonder',
-      other: {
-        wonder: 'about',
-        things: 'foo',
-        xxx: 'bread'
-      }
+  const person = {
+    info: {
+      name: 'billy joe',
+      password: 'you will never guess',
+      ssn: '099-33-2222',
+      address: {
+        street: '11 foo st',
+        city: 'Oxford',
+        state: 'IL',
+        zip: '17777'
+      },
+      birthday: new Date(),
+      kids: [{
+        name: 'sally',
+        pw: 'supersecret',
+        fn: () => {},
+        kids: [{
+          name: 'leslie'
+        }]
+      }, {
+        name: 'juniper',
+        secret: 'supersecret',
+        fn: () => {},
+        kids: [{
+          name: 'mark',
+          ssn: '11-11-11',
+          pw: 'silly'
+        }, {
+          name: 'will'
+        }]
+      }]
     }
   }
-  log.info(x)
-
+  person.clone = person
+  person.clone.clone = person
+  log.warn('My favorite person', person)
+  console.log(person)
   // setInterval(() => {
   //   log.info(log.level)
   // }, 3000)
