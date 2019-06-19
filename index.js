@@ -116,13 +116,13 @@ class Logger {
     }
     for (const level of Object.keys(this.levels)) {
       this[level] = (message, json, keysToSkip, valuesToSkip) => {
-        if (this.levels[level] >= this.levels[this.level]) {
+        if (message && this.levels[level] >= this.levels[this.level]) {
           const log = buildLog(level, message, json, keysToSkip, valuesToSkip)
           this.out.write(`${JSON.stringify(log, null, this.indent)}\n`)
         }
       }
       this[`${level}UtilFormat`] = (message, json, keysToSkip, valuesToSkip) => {
-        if (this.levels[level] >= this.levels[this.level]) {
+        if (message && this.levels[level] >= this.levels[this.level]) {
           let log = buildLog(level, message, json, keysToSkip, valuesToSkip)
           log = util.format(log)
           if (!this.indent) {
@@ -191,8 +191,11 @@ if (require.main === module) {
   }
   person.clone = person
   person.clone.clone = person
-  log.warn('My favorite person', person)
-  console.log(person)
+  // log.warn('My favorite person', person)
+  log.warn()
+  log.warn(null)
+  log.warn('foo', null)
+  // console.log(person)
   // setInterval(() => {
   //   log.info(log.level)
   // }, 3000)
