@@ -89,7 +89,11 @@ class Logger {
       }
       keysToSkip.push(...this.keysToSkip)
       valuesToSkip.push(...this.valuesToSkip)
-      log = assignOwnProperties(keysToSkip, valuesToSkip)(log, json)
+      if (isString(json) || Array.isArray(json) || json instanceof Date) {
+        log = assignOwnProperties(keysToSkip, valuesToSkip)(log, { json })
+      } else {
+        log = assignOwnProperties(keysToSkip, valuesToSkip)(log, json)
+      }
       return log
     }
     Object.assign(this, options)
@@ -192,9 +196,9 @@ if (require.main === module) {
   person.clone = person
   person.clone.clone = person
   // log.warn('My favorite person', person)
-  log.warn()
-  log.warn(null)
-  log.warn('foo', null)
+  // log.warn()
+  // log.warn(null)
+  log.warn('foo', 'what is ths?')
   // console.log(person)
   // setInterval(() => {
   //   log.info(log.level)
