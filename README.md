@@ -29,7 +29,8 @@ I want to easily log any object in string format like
 There are two un-helpful things about `JSON.stringify()`.
 
 1. It throws an error if your object has circular references.
-2. It doesn't include properties that aren't enumerable.
+2. It doesn't include properties that aren't enumerable 
+    (so you can't easily log `Error` and other such objects).
 
 Another thing I don't like about `JSON.stringify()` is the
 [replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)
