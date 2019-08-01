@@ -1,5 +1,12 @@
  # simple-json-log
 
+DEPRECATED: This never worked out as I had hoped.
+Use [safe-json-log](https://www.npmjs.com/package/safe-json-log)
+instead. https://github.com/johndstein/safe-json-log
+
+If someone has a way to JSON.stringify safely and it includes nicely
+serializing `Error` objects, I'd love to hear from you.
+
 A [JSON](#json) logger for [Node.js](https://nodejs.org).
 
 Light weight. No external dependencies. Great for application code or
@@ -29,7 +36,7 @@ I want to easily log any object in string format like
 There are two un-helpful things about `JSON.stringify()`.
 
 1. It throws an error if your object has circular references.
-2. It doesn't include properties that aren't enumerable 
+2. It doesn't include properties that aren't enumerable
     (so you can't easily log `Error` and other such objects).
 
 Another thing I don't like about `JSON.stringify()` is the
